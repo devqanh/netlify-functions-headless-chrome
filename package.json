@@ -1,30 +1,15 @@
 {
-  "name": "headless-chrome-netlify-functions",
-  "version": "0.1.0",
-  "private": true,
-  "dependencies": {
-    "analytics": "^0.3.5",
-    "chrome-aws-lambda": "^10.1.0",
-    "express": "^4.17.1",
-    "puppeteer-core": "^11.0.0",
-    "react": "^16.13.1",
-    "react-dom": "^16.13.1",
-    "react-scripts": "3.4.1",
-    "readline": "^1.3.0"
-  },
-  "scripts": {
-    "start": "react-scripts start",
-    "prezip": "rm -rf functions-build && mkdir functions-build",
-    "zip": "cd functions/chrome && npm install && chmod -R 777 node_modules && zip -r chrome.zip *",
-    "postzip": "mv functions/chrome/chrome.zip functions-build",
-    "prebuild": "npm run zip",
-    "build": "react-scripts build",
-    "docs": "md-magic --path '**/*.md' --ignore 'node_modules'"
-  },
+  "name": "my-puppeteer-function",
+  "version": "1.0.0",
+  "description": "",
   "main": "index.js",
-  "devDependencies": {
-    "markdown-magic": "^1.0.0"
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
-  "license": "MIT"
+  "author": "Colby Fayock <hello@colbyfayock.com>",
+  "license": "MIT",
+  "dependencies": {
+    "chrome-aws-lambda": "^10.1.0",
+    "puppeteer-core": "^10.2.0"
+  }
 }
