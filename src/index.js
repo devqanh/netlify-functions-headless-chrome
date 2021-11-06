@@ -1,27 +1,54 @@
 const chromium = require('chrome-aws-lambda')
 const puppeteer = require('puppeteer-core')
-const express = require('express'); // Adding Express
-const app = express(); // Initializing Express
 
-app.get('/', function (req, res) {
-    let url = req.query.url;
-    if (typeof url !== 'undefined') {
-        puppeteer.launch({headless: true,args: ['--no-sandbox']}).then(async function (browser) {
-            const page = await browser.newPage();
-            await page.goto('https://snaptik.app/vn');
-            await page.type('#url', url)
-            await page.click('#submiturl')
-            await page.waitForSelector('#snaptik-video > article > div.snaptik-right');
-            const data = await page.evaluate(() => document.querySelector('#snaptik-video').outerHTML);
-            await browser.close();
-            res.send(data);
-            //   await browser.close();
+exports.handler = async (event, context) => {
+    let theTitle = null
+    let browser = null
+    console.log('spawning chrome headless')
+    try {
+        const executablePath = await chromium.executablePath
+
+        // setup
+        browser = await puppeteer.launch({
+            args: chromium.args,
+            executablePath: executablePath,
+            headless: chromium.headless,
         })
-    } else {
-        res.send("Vui long nhap link");
+
+        // Do stuff with headless chrome
+        const page = await browser.newPage()
+        const targetUrl = 'https://davidwells.io'
+
+        // Goto page and then do stuff
+        await page.goto(targetUrl, {
+            waitUntil: ["domcontentloaded", "networkidle0"]
+        })
+
+        await page.waitForSelector('#phenomic')
+
+        theTitle = await page.title();
+
+        console.log('done on page', theTitle)
+
+    } catch (error) {
+        console.log('error', error)
+        return {
+            statusCode: 500,
+            body: JSON.stringify({
+                error: error
+            })
+        }
+    } finally {
+        // close browser
+        if (browser !== null) {
+            await browser.close()
+        }
     }
-});
-// Making Express listen on port 7000
-app.listen(3000, function () {
-    console.log(`Running on port 3000.`);
-});
+
+    return {
+        statusCode: 200,
+        body: JSON.stringify({
+            title: theTitle,
+        })
+    }
+}
